@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 morgan.token('person', function getInfo (req) {
     if (JSON.stringify(req.body).length > 0) {
         return JSON.stringify(req.body)
@@ -16,6 +17,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :p
 app.use(morgan('tiny', {
     skip: function (req,res) { return req.method === "POST"}
 })) // Muuten tulostetaan vain tiny:n sisältämät tiedot
+app.use(cors())
 
 let persons = [
     {
@@ -114,7 +116,7 @@ let persons = [
     response.json(person)
   })
 
-  const PORT = 3001
+  const PORT = process.env.PORT || 3001
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
   })
