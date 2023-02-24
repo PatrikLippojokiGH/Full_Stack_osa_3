@@ -18,6 +18,7 @@ app.use(morgan('tiny', {
     skip: function (req,res) { return req.method === "POST"}
 })) // Muuten tulostetaan vain tiny:n sisältämät tiedot
 app.use(cors())
+app.use(express.static('build'))
 
 let persons = [
     {
