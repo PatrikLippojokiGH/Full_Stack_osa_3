@@ -64,24 +64,24 @@ app.use(cors())
   })
 
   app.put('/api/persons/:id', (request, response, next) => {
-    const body = request.body
-    const person = {
-      name: body.name,
-      number: body.number,
-    }
+    const { name, number } = request.body
 
-    Person.findByIdAndUpdate(request.params.id, person, { new: true})
-    .then(updatedPerson => {
-      response.json(updatedPerson)
-    })
-    .catch(error => next(error))
+    Person.findByIdAndUpdate(
+      request.params.id,
+      { name, number },
+      { new: true, runValidators:true, context:'query' }
+      )
+      .then(updatedPerson => {
+        response.json(updatedPerson)
+      })
+      .catch(error => next(error))
   })
   
-  app.post('/api/persons', (request, response) => {
+  app.post('/api/persons', (request, response, next) => {
     const body = request.body
   
     if (!body.name) { // Palauttaa virheen jossei nimeä ja numeroa ole annettu
-      return response.status(400).json({ 
+      return response.status(400).json({
         error: 'name missing' 
       })
     }
@@ -99,7 +99,8 @@ app.use(cors())
   
     person.save().then(savedPerson => { // Tallennus tietokantaan
       response.json(savedPerson)
-    })    
+    })
+    .catch(error => next(error))
   })
 
   const errorHandler = (error, request, response, next) => { // Virheiden keskittäminen middlewareen
@@ -107,6 +108,8 @@ app.use(cors())
   
     if (error.name === 'CastError') {
       return response.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === 'ValidationError') {
+      return response.status(400).json({ error: error.message })
     }
   
     next(error)
