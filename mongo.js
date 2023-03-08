@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
 
 if (process.argv.length<3) {
-    console.log('Anna salasana arumenttina')
-    process.exit(1)
+  console.log('Anna salasana arumenttina')
+  process.exit(1)
 }
 
 if (process.argv.length===4) {
-    console.log('Anna lisättävän henkilön nimi sekä numero')
-    process.exit(1)
+  console.log('Anna lisättävän henkilön nimi sekä numero')
+  process.exit(1)
 }
 
 const password = process.argv[2]
@@ -19,42 +19,42 @@ mongoose.set('strictQuery', false)
 mongoose.connect(url)
 
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+  name: String,
+  number: String,
 })
 
 const Person = mongoose.model('Person', personSchema)
 
 if (process.argv.length===3) {
 
-    console.log('phonebook:')    
+  console.log('phonebook:')
 
-    Person.find({}).then(result => {
-      result.forEach(person => {
-          console.log(`${person.name} ${person.number}`)
-      })
-      mongoose.connection.close()
-      process.exit(1)
+  Person.find({}).then(result => {
+    result.forEach(person => {
+      console.log(`${person.name} ${person.number}`)
     })
-  }
+    mongoose.connection.close()
+    process.exit(1)
+  })
+}
 
 if (process.argv.length===5) {
 
-    console.log('aloitus')
-    console.log(process.argv[3])
-    console.log(process.argv[4])    
+  console.log('aloitus')
+  console.log(process.argv[3])
+  console.log(process.argv[4])
 
-    const person = new Person({
-        name: process.argv[3],
-        number: process.argv[4]
-    })
+  const person = new Person({
+    name: process.argv[3],
+    number: process.argv[4]
+  })
 
-    console.log('henkilö tehty')
+  console.log('henkilö tehty')
 
-    person.save().then(result => {
-        console.log(`added ${person.name} number ${person.number} to phonebook`)
-        mongoose.connection.close()
-        process.exit(1)
-    })
+  person.save().then(() => {
+    console.log(`added ${person.name} number ${person.number} to phonebook`)
+    mongoose.connection.close()
+    process.exit(1)
+  })
 
 }
